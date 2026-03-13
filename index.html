@@ -18,15 +18,25 @@
 
       <main class="layout">
         <section class="session-panel">
-          <div class="session-panel-copy">
-            <p class="eyebrow">CASE CODE</p>
-            <h2>输入同一个案件码，进入同一场吵架</h2>
-            <p>
-              先选好自己是哪一边，再输入同一个数字案件码。两个人用同一个码进入同一案件，但只会看到自己这一侧的输入区。
-            </p>
+          <div class="session-panel-head">
+            <div class="session-panel-copy">
+              <p class="eyebrow">CASE CODE</p>
+              <h2>案件码</h2>
+            </div>
+
+            <button
+              class="info-toggle"
+              id="case-help-toggle"
+              type="button"
+              aria-expanded="false"
+              aria-controls="case-help-modal"
+              aria-label="查看案件码说明"
+            >
+              i
+            </button>
           </div>
 
-          <div class="session-panel-controls">
+          <div class="session-panel-controls compact-session-panel">
             <div class="side-picker" role="tablist" aria-label="选择自己的席位">
               <button class="side-choice is-active" type="button" data-side-choice="coffee">我是咖啡猫猫</button>
               <button class="side-choice" type="button" data-side-choice="game">我是游戏猫猫</button>
@@ -43,14 +53,11 @@
                 placeholder="输入同一个数字，比如 5201"
               />
               <button class="primary-btn" id="join-case-btn" type="button">进入案件</button>
-              <button class="ghost-btn" id="random-code-btn" type="button">随机一个新码</button>
             </div>
 
             <div class="session-meta-row">
               <span class="case-badge" id="current-case-badge">还没进入案件</span>
-              <p class="session-status-text" id="session-status-text">
-                先选好自己的席位，再输入同一个数字。谁先进入都可以，另一边之后再输入相同数字就能进到同一案。
-              </p>
+              <p class="session-status-text" id="session-status-text" hidden></p>
             </div>
           </div>
         </section>
@@ -297,6 +304,17 @@
           <button class="ghost-btn" id="confirm-cancel" type="button">先留着</button>
           <button class="primary-btn" id="confirm-delete" type="button">确认删除</button>
         </div>
+      </div>
+    </div>
+
+    <div class="modal-backdrop" id="case-help-modal" hidden>
+      <div class="modal-card help-modal">
+        <button class="modal-close" id="case-help-close" type="button" aria-label="关闭">×</button>
+        <p class="eyebrow">CASE CODE GUIDE</p>
+        <h2>案件码怎么用</h2>
+        <p>
+          先选好自己是哪一边，再输入同一个数字案件码。两个人用同一个码进入同一案件，但只会看到自己这一侧的输入区。
+        </p>
       </div>
     </div>
 

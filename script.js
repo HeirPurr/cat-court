@@ -34,9 +34,11 @@ const panelMeta = {
 const sideChoiceButtons = document.querySelectorAll("[data-side-choice]");
 const caseCodeInputEl = document.getElementById("case-code-input");
 const joinCaseBtn = document.getElementById("join-case-btn");
-const randomCodeBtn = document.getElementById("random-code-btn");
 const currentCaseBadgeEl = document.getElementById("current-case-badge");
 const sessionStatusTextEl = document.getElementById("session-status-text");
+const caseHelpToggleBtn = document.getElementById("case-help-toggle");
+const caseHelpModalEl = document.getElementById("case-help-modal");
+const caseHelpCloseBtn = document.getElementById("case-help-close");
 
 const verdictEl = document.getElementById("verdict-text");
 const verdictLevelEl = document.getElementById("verdict-level");
@@ -248,10 +250,29 @@ function updateUrl() {
 }
 
 function syncEntryControls() {
-  const busy = activeState.isJoining || activeState.isSubmitting || activeState.isJudging || activeState.isArchiving;
   joinCaseBtn.disabled = activeState.isJoining;
-  randomCodeBtn.disabled = busy;
   joinCaseBtn.textContent = activeState.isJoining ? "进入中..." : "进入案件";
+}
+
+function setSessionStatus(text = "") {
+  if (!text) {
+    sessionStatusTextEl.hidden = true;
+    sessionStatusTextEl.textContent = "";
+    return;
+  }
+
+  sessionStatusTextEl.hidden = false;
+  sessionStatusTextEl.textContent = text;
+}
+
+function openCaseHelp() {
+  caseHelpModalEl.hidden = false;
+  caseHelpToggleBtn.setAttribute("aria-expanded", "true");
+}
+
+function closeCaseHelp() {
+  caseHelpModalEl.hidden = true;
+  caseHelpToggleBtn.setAttribute("aria-expanded", "false");
 }
 
 function syncJudgeButtons() {
@@ -433,7 +454,7 @@ function renderSessionMeta() {
   if (!activeState.joined || !activeState.snapshot) {
     currentCaseBadgeEl.textContent = "还没进入案件";
     currentCaseBadgeEl.classList.remove("is-live");
-    sessionStatusTextEl.textContent = "先选好自己的席位，再输入同一个数字。谁先进入都可以，另一边之后再输入相同数字就能进到同一案。";
+    setSessionStatus("");
     return;
   }
 
@@ -443,26 +464,26 @@ function renderSessionMeta() {
   currentCaseBadgeEl.classList.add("is-live");
 
   if (snapshot.status === "archived") {
-    sessionStatusTextEl.textContent = "这场案件已经封存。如果还想再开一场新的，换一个数字案件码就好。";
+    setSessionStatus("这场案件已经封存。如果还想再开一场新的，换一个数字案件码就好。");
     return;
   }
 
   if (snapshot.status === "judged") {
-    sessionStatusTextEl.textContent = "这场案件已经宣判完成。你们现在可以看结果，也可以把它正式封存进历史记录。";
+    setSessionStatus("这场案件已经宣判完成。你们现在可以看结果，也可以把它正式封存进历史记录。");
     return;
   }
 
   if (snapshot.submitted[activeState.side] && !snapshot.allSubmitted) {
-    sessionStatusTextEl.textContent = "你这一边已经交卷了。现在只差另一边也输入相同案件码并提交。";
+    setSessionStatus("你这一边已经交卷了。现在只差另一边也输入相同案件码并提交。");
     return;
   }
 
   if (!snapshot.submitted[activeState.side]) {
-    sessionStatusTextEl.textContent = "你已经进入这场案件了。现在轮到你在自己的席位上把想法写清楚。";
+    setSessionStatus("你已经进入这场案件了。现在轮到你在自己的席位上把想法写清楚。");
     return;
   }
 
-  sessionStatusTextEl.textContent = "双方都已经提交完成。现在可以去请小咪判官开庭了。";
+  setSessionStatus("双方都已经提交完成。现在可以去请小咪判官开庭了。");
 }
 
 function renderActiveCase(triggerCelebrate = false) {
@@ -674,14 +695,14 @@ async function refreshRecordsAndRender(preferredDate = selectedHistoryDate) {
 async function joinActiveCase(code) {
   const normalized = normalizeCode(code || caseCodeInputEl.value);
   if (normalized.length < 4) {
-    sessionStatusTextEl.textContent = "案件码至少要 4 位数字。";
+    setSessionStatus("案件码至少要 4 位数字。");
     caseCodeInputEl.focus();
     return;
   }
 
   activeState.isJoining = true;
   syncEntryControls();
-  sessionStatusTextEl.textContent = "正在进入案件，请稍等。";
+  setSessionStatus("正在进入案件，请稍等。");
 
   try {
     const snapshot = await fetchJson("/api/active-cases/join", {
@@ -708,7 +729,7 @@ async function joinActiveCase(code) {
   } catch (error) {
     activeState.joined = false;
     activeState.snapshot = null;
-    sessionStatusTextEl.textContent = error.message || "进入案件失败，请稍后再试。";
+    setSessionStatus(error.message || "进入案件失败，请稍后再试。");
     renderPanels();
     renderJudgeState();
   } finally {
@@ -727,7 +748,7 @@ async function deleteRecord(recordId) {
 
 async function sealOwnStatement(panelKey) {
   if (!activeState.joined || activeState.side !== panelKey || !activeState.snapshot) {
-    sessionStatusTextEl.textContent = "先进入一个案件，再轮到你这一边发言。";
+    setSessionStatus("先进入一个案件，再轮到你这一边发言。");
     return;
   }
 
@@ -758,7 +779,7 @@ async function sealOwnStatement(panelKey) {
     activeState.isEditing = false;
     renderActiveCase();
   } catch (error) {
-    sessionStatusTextEl.textContent = error.message || "封存陈词失败，请稍后再试。";
+    setSessionStatus(error.message || "封存陈词失败，请稍后再试。");
   } finally {
     activeState.isSubmitting = false;
     syncEntryControls();
@@ -878,7 +899,7 @@ sideChoiceButtons.forEach((button) => {
   button.addEventListener("click", () => {
     setSelectedSide(button.dataset.sideChoice);
     if (activeState.joined && activeState.selectedSide !== activeState.side) {
-      sessionStatusTextEl.textContent = `席位已经切到${panelMeta[activeState.selectedSide].name}。再点一次“进入案件”，就会用当前案件码切到这一侧。`;
+      setSessionStatus(`席位已经切到${panelMeta[activeState.selectedSide].name}。再点一次“进入案件”，就会用当前案件码切到这一侧。`);
     }
   });
 });
@@ -891,9 +912,12 @@ joinCaseBtn.addEventListener("click", () => {
   joinActiveCase();
 });
 
-randomCodeBtn.addEventListener("click", () => {
-  caseCodeInputEl.value = `${Math.floor(1000 + Math.random() * 9000)}`;
-  sessionStatusTextEl.textContent = "已经给你填了一个新案件码。把这个数字告诉另一边，然后一起输入就行。";
+caseHelpToggleBtn.addEventListener("click", openCaseHelp);
+caseHelpCloseBtn.addEventListener("click", closeCaseHelp);
+caseHelpModalEl.addEventListener("click", (event) => {
+  if (event.target === caseHelpModalEl) {
+    closeCaseHelp();
+  }
 });
 
 Object.keys(panelMeta).forEach((panelKey) => {
@@ -977,7 +1001,7 @@ confirmDeleteBtn.addEventListener("click", async () => {
     try {
       await deleteRecord(pendingDeleteId);
     } catch (error) {
-      sessionStatusTextEl.textContent = error.message || "删除失败，请稍后再试。";
+      setSessionStatus(error.message || "删除失败，请稍后再试。");
     }
   }
   closeDeleteConfirm();
@@ -988,6 +1012,7 @@ document.addEventListener("keydown", (event) => {
     closeDetailModal();
     closeDeleteConfirm();
     closeDatePicker();
+    closeCaseHelp();
   }
 });
 
@@ -1014,7 +1039,7 @@ async function initializeApp() {
     visibleMonth = startOfMonth(new Date());
     renderCalendar();
     renderHistoryList();
-    sessionStatusTextEl.textContent = error.message || "共享记录加载失败，请稍后再试。";
+    setSessionStatus(error.message || "共享记录加载失败，请稍后再试。");
   }
 
   const routeCase = getRouteCase();
