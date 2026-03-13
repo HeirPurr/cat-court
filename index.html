@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>猫猫判官庭</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <p class="eyebrow">CAT COURT</p>
+        <h1>猫猫判官庭</h1>
+        <p class="hero-copy">
+          吵归吵，还是要让猫猫来主持公道。两边各自陈述，写完即封存，最后由小咪判官发出喵系裁决。
+        </p>
+      </header>
+
+      <main class="layout">
+        <section class="session-panel">
+          <div class="session-panel-copy">
+            <p class="eyebrow">CASE CODE</p>
+            <h2>输入同一个案件码，进入同一场吵架</h2>
+            <p>
+              先选好自己是哪一边，再输入同一个数字案件码。两个人用同一个码进入同一案件，但只会看到自己这一侧的输入区。
+            </p>
+          </div>
+
+          <div class="session-panel-controls">
+            <div class="side-picker" role="tablist" aria-label="选择自己的席位">
+              <button class="side-choice is-active" type="button" data-side-choice="coffee">我是咖啡猫猫</button>
+              <button class="side-choice" type="button" data-side-choice="game">我是游戏猫猫</button>
+            </div>
+
+            <div class="session-entry-row">
+              <label class="visually-hidden" for="case-code-input">案件码</label>
+              <input
+                id="case-code-input"
+                class="case-code-input"
+                type="text"
+                inputmode="numeric"
+                maxlength="6"
+                placeholder="输入同一个数字，比如 5201"
+              />
+              <button class="primary-btn" id="join-case-btn" type="button">进入案件</button>
+              <button class="ghost-btn" id="random-code-btn" type="button">随机一个新码</button>
+            </div>
+
+            <div class="session-meta-row">
+              <span class="case-badge" id="current-case-badge">还没进入案件</span>
+              <p class="session-status-text" id="session-status-text">
+                先选好自己的席位，再输入同一个数字。谁先进入都可以，另一边之后再输入相同数字就能进到同一案。
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="argument-panel coffee-panel" aria-labelledby="coffee-title" data-panel="coffee">
+          <div class="panel-fireworks" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+
+          <div class="panel-head">
+            <div class="avatar-shell coffee-shell">
+              <div class="avatar-frame coffee-avatar" aria-hidden="true">
+                <img src="./picture/CatCoffee.jpg" alt="" class="avatar-image" />
+              </div>
+            </div>
+            <div>
+              <p class="role-tag">陈述席位 A</p>
+              <h2 id="coffee-title">咖啡猫猫</h2>
+              <p class="panel-note" id="coffee-panel-note">还没进入案件，先在上面输入案件码。</p>
+            </div>
+          </div>
+
+          <label class="input-label" for="coffee-input">说说你的想法</label>
+          <div class="argument-box" data-panel="coffee">
+            <textarea
+              id="coffee-input"
+              class="argument-input"
+              placeholder="比如：今天到底是谁先阴阳怪气的？"
+            ></textarea>
+            <div class="sealed-mask" hidden>
+              <p>已封存陈词</p>
+              <span>喵，另一边暂时看不到这里的内容。</span>
+            </div>
+          </div>
+
+          <div class="panel-actions">
+            <button class="primary-btn seal-btn" type="button" data-panel="coffee">
+              输入完成
+            </button>
+            <button class="ghost-btn edit-btn" type="button" data-panel="coffee" hidden>
+              重新输入
+            </button>
+          </div>
+        </section>
+
+        <section class="argument-panel game-panel" aria-labelledby="game-title" data-panel="game">
+          <div class="panel-fireworks" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+
+          <div class="panel-head">
+            <div class="avatar-shell game-shell">
+              <div class="avatar-frame game-avatar" aria-hidden="true">
+                <img src="./picture/CatGame.jpg" alt="" class="avatar-image" />
+              </div>
+            </div>
+            <div>
+              <p class="role-tag">陈述席位 B</p>
+              <h2 id="game-title">游戏猫猫</h2>
+              <p class="panel-note" id="game-panel-note">还没进入案件，先在上面输入案件码。</p>
+            </div>
+          </div>
+
+          <label class="input-label" for="game-input">说说你的想法</label>
+          <div class="argument-box" data-panel="game">
+            <textarea
+              id="game-input"
+              class="argument-input"
+              placeholder="比如：玩游戏不是问题，问题是为什么不回消息？"
+            ></textarea>
+            <div class="sealed-mask" hidden>
+              <p>已封存陈词</p>
+              <span>喵，另一边暂时看不到这里的内容。</span>
+            </div>
+          </div>
+
+          <div class="panel-actions">
+            <button class="primary-btn seal-btn" type="button" data-panel="game">
+              输入完成
+            </button>
+            <button class="ghost-btn edit-btn" type="button" data-panel="game" hidden>
+              重新输入
+            </button>
+          </div>
+        </section>
+
+        <section class="judge-panel">
+          <div class="judge-card">
+            <div class="judge-head">
+              <div class="judge-avatar-stack">
+                <div class="avatar-shell judge-shell">
+                  <div class="avatar-frame judge-avatar" aria-hidden="true">
+                    <img src="./picture/CatCourt.jpg" alt="" class="avatar-image" />
+                  </div>
+                </div>
+              </div>
+              <div class="judge-info">
+                <div class="judge-role-row">
+                  <p class="role-tag">判官席</p>
+                  <button class="court-trigger" id="court-trigger" type="button">开庭</button>
+                </div>
+                <h2>小咪判官</h2>
+              </div>
+            </div>
+
+            <div class="verdict-box">
+              <div class="verdict-topline">
+                <p class="judge-label">猫猫审判区</p>
+                <span class="verdict-level verdict-level-neutral" id="verdict-level">等待开庭</span>
+              </div>
+              <p class="judge-meta" id="judge-meta">双方封存陈词之后，点击判官席边上的【开庭】即可开始审判。</p>
+              <p class="judge-quote" id="verdict-text">
+                当前还没到正式宣判阶段。等双方都提交之后，小咪判官自有定论。
+              </p>
+              <div class="reason-list" id="reason-list"></div>
+            </div>
+
+            <div class="analysis-box">
+              <p class="judge-label">猫猫法官小分析</p>
+              <p id="analysis-text">
+                目前法官还在安静舔毛。等双方都提交后，这里会显示猫猫怎么看待这场吵架。
+              </p>
+            </div>
+
+            <div class="advice-box">
+              <p class="judge-label">小咪判官给猫猫们的建议</p>
+              <div class="advice-grid">
+                <section class="advice-item coffee-advice">
+                  <p class="advice-name">给咖啡猫猫</p>
+                  <p id="coffee-advice-text">如果这边已经做得很好，小咪判官就不会额外多嘴。</p>
+                </section>
+                <section class="advice-item game-advice">
+                  <p class="advice-name">给游戏猫猫</p>
+                  <p id="game-advice-text">如果这边已经做得很好，小咪判官就不会额外多嘴。</p>
+                </section>
+              </div>
+            </div>
+
+            <button class="primary-btn verdict-btn" type="button" id="refresh-judge">
+              本案封存
+            </button>
+          </div>
+        </section>
+
+        <section class="history-panel">
+          <div class="history-head">
+            <div>
+              <p class="eyebrow">PAST MEOW CASES</p>
+              <h2>按日期查看过去的吵架记录</h2>
+            </div>
+            <div class="date-picker-wrap">
+              <button class="date-picker-trigger" id="date-picker-trigger" type="button" aria-label="选择日期">
+                <span>查看日期</span>
+                <strong id="selected-date-label">未选择</strong>
+              </button>
+              <div class="date-picker-popover" id="date-picker-popover" hidden>
+                <div class="calendar-nav">
+                  <button class="calendar-btn" id="prev-month" type="button" aria-label="上个月">
+                    ‹
+                  </button>
+                  <p class="calendar-title" id="calendar-title">2026 年 03 月</p>
+                  <button class="calendar-btn" id="next-month" type="button" aria-label="下个月">
+                    ›
+                  </button>
+                </div>
+                <div class="calendar-weekdays">
+                  <span>一</span>
+                  <span>二</span>
+                  <span>三</span>
+                  <span>四</span>
+                  <span>五</span>
+                  <span>六</span>
+                  <span>日</span>
+                </div>
+                <div class="calendar-grid" id="date-grid"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="history-list" id="history-list"></div>
+        </section>
+      </main>
+    </div>
+
+    <div class="modal-backdrop" id="record-modal" hidden>
+      <div class="modal-card detail-modal">
+        <button class="modal-close" id="detail-close" type="button" aria-label="关闭">×</button>
+        <p class="eyebrow">CASE DETAIL</p>
+        <h2 id="detail-title">猫猫判决详情</h2>
+        <div class="detail-summary">
+          <p class="detail-date" id="detail-date"></p>
+          <span class="verdict-level verdict-level-neutral" id="detail-level">等待开庭</span>
+        </div>
+        <div class="detail-section">
+          <p class="judge-label">本轮胜方</p>
+          <p class="detail-winner" id="detail-winner"></p>
+        </div>
+        <div class="detail-section">
+          <p class="judge-label">猫猫审判区</p>
+          <p id="detail-verdict"></p>
+        </div>
+        <div class="detail-section">
+          <p class="judge-label">猫猫法官小分析</p>
+          <p id="detail-analysis"></p>
+        </div>
+        <div class="detail-grid">
+          <section class="detail-section">
+            <p class="judge-label">给咖啡猫猫的建议</p>
+            <p id="detail-coffee-advice"></p>
+          </section>
+          <section class="detail-section">
+            <p class="judge-label">给游戏猫猫的建议</p>
+            <p id="detail-game-advice"></p>
+          </section>
+        </div>
+        <div class="detail-grid">
+          <section class="detail-section">
+            <p class="judge-label">咖啡猫猫观点</p>
+            <p id="detail-coffee"></p>
+          </section>
+          <section class="detail-section">
+            <p class="judge-label">游戏猫猫观点</p>
+            <p id="detail-game"></p>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-backdrop" id="confirm-modal" hidden>
+      <div class="modal-card confirm-modal">
+        <h2>删除这条吵架记录？</h2>
+        <p>这条记录一旦删除就回不来了。再确认一次，你真的要删掉它吗？</p>
+        <div class="modal-actions">
+          <button class="ghost-btn" id="confirm-cancel" type="button">先留着</button>
+          <button class="primary-btn" id="confirm-delete" type="button">确认删除</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
